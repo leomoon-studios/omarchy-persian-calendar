@@ -12,6 +12,10 @@ The popup uses a fully right-to-left layout: Saturday is the rightmost day,
 Friday is the leftmost, and the hero, progress rail, and navigation controls
 are mirrored consistently.
 
+A built-in date converter switches between Jalali-to-Gregorian and
+Gregorian-to-Jalali modes. It accepts Persian, Arabic, or Latin numerals and
+runs entirely inside the plugin without launching a background process.
+
 ## Preview
 
 ![Omarchy Persian Calendar preview](preview.png)
@@ -66,6 +70,7 @@ Useful Persian-capable choices include `Vazirmatn UI`, `Vazirmatn`,
 - Arrow left/right: previous or next month
 - Arrow up/down or `{` / `}`: previous or next year
 - `T` or Enter: return to today
+- `C`: switch between calendar and date converter
 - Escape: close the panel
 
 ## Development

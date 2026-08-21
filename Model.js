@@ -25,6 +25,12 @@ function toPersianDigits(value) {
   })
 }
 
+function toLatinDigits(value) {
+  return String(value)
+    .replace(/[۰-۹]/g, function(digit) { return String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)) })
+    .replace(/[٠-٩]/g, function(digit) { return String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)) })
+}
+
 // Gregorian/Jalali conversion ported from mjnaderi/Jalali.py.
 function gregorianToJalali(year, month, day) {
   var d4 = year % 4
@@ -123,6 +129,54 @@ function persianDaysInYear(year) {
     Date.UTC(next.year, next.month - 1, next.day)
       - Date.UTC(start.year, start.month - 1, start.day)
   ) / MS_PER_DAY)
+}
+
+function persianMonthLength(year, month) {
+  var m = Number(month)
+  if (m >= 1 && m <= 6) return 31
+  if (m >= 7 && m <= 11) return 30
+  if (m === 12) return persianDaysInYear(Number(year)) === 366 ? 30 : 29
+  return 0
+}
+
+function validPersianDate(year, month, day) {
+  var y = Number(year)
+  var m = Number(month)
+  var d = Number(day)
+  return Number.isInteger(y) && Number.isInteger(m) && Number.isInteger(d)
+    && y >= 1 && y <= 3000 && d >= 1 && d <= persianMonthLength(y, m)
+}
+
+function validGregorianDate(year, month, day) {
+  var y = Number(year)
+  var m = Number(month)
+  var d = Number(day)
+  if (!Number.isInteger(y) || !Number.isInteger(m) || !Number.isInteger(d)
+      || y < 100 || y > 9999 || m < 1 || m > 12 || d < 1 || d > 31) return false
+  var date = new Date(Date.UTC(y, m - 1, d))
+  return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d
+}
+
+function convertDate(yearText, monthText, dayText, fromPersian) {
+  var parts = [yearText, monthText, dayText].map(function(value) {
+    var normalized = toLatinDigits(value).replace(/^\s+|\s+$/g, "")
+    return /^\d+$/.test(normalized) ? Number(normalized) : NaN
+  })
+  var year = parts[0]
+  var month = parts[1]
+  var day = parts[2]
+  var valid = fromPersian
+    ? validPersianDate(year, month, day)
+    : validGregorianDate(year, month, day)
+  if (!valid) return { ok: false, error: "تاریخ واردشده معتبر نیست", result: null }
+
+  return {
+    ok: true,
+    error: "",
+    result: fromPersian
+      ? jalaliToGregorian(year, month, day)
+      : gregorianToJalali(year, month, day)
+  }
 }
 
 function persianYearProgress(year, month, day) {
@@ -389,7 +443,9 @@ if (typeof module !== "undefined") {
     clockFormatRing: clockFormatRing,
     nextClockFormat: nextClockFormat,
     isoWeekLiteral: isoWeekLiteral
+    ,pad2: pad2
     ,toPersianDigits: toPersianDigits
+    ,toLatinDigits: toLatinDigits
     ,gregorianToJalali: gregorianToJalali
     ,jalaliToGregorian: jalaliToGregorian
     ,persianKey: persianKey
@@ -399,6 +455,10 @@ if (typeof module !== "undefined") {
     ,persianWeekdayName: persianWeekdayName
     ,persianDayOfYear: persianDayOfYear
     ,persianDaysInYear: persianDaysInYear
+    ,persianMonthLength: persianMonthLength
+    ,validPersianDate: validPersianDate
+    ,validGregorianDate: validGregorianDate
+    ,convertDate: convertDate
     ,persianYearProgress: persianYearProgress
     ,persianYearProgressPercent: persianYearProgressPercent
     ,persianMonthGrid: persianMonthGrid

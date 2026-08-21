@@ -76,6 +76,15 @@ Panel {
   readonly property int weekColumnWidth: 0
   readonly property int gutterWidth: 0
 
+  property bool converterMode: false
+  property bool conversionFromPersian: true
+  property var conversionResult: null
+  property string conversionError: ""
+  readonly property string conversionResultText: conversionResult
+    ? Model.toPersianDigits(conversionResult.year + "/" + Model.pad2(conversionResult.month) + "/" + Model.pad2(conversionResult.day))
+    : ""
+  readonly property string conversionDestinationLabel: conversionFromPersian ? "میلادی" : "شمسی"
+
   function open() {
     refresh()
     root.controller.show()
@@ -132,6 +141,63 @@ Panel {
     moveMonth(delta * 12)
   }
 
+  function setConversionFields(date) {
+    conversionYear.text = Model.toPersianDigits(date.year)
+    conversionMonth.text = Model.toPersianDigits(date.month)
+    conversionDay.text = Model.toPersianDigits(date.day)
+  }
+
+  function resetConverter() {
+    conversionResult = null
+    conversionError = ""
+    setConversionFields(conversionFromPersian ? todayPersian : {
+      year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate()
+    })
+  }
+
+  function toggleConverter() {
+    converterMode = !converterMode
+    if (converterMode) {
+      resetConverter()
+      Qt.callLater(function() {
+        conversionYear.selectAll()
+        conversionYear.forceActiveFocus()
+      })
+    } else {
+      conversionResult = null
+      conversionError = ""
+      Qt.callLater(function() { keyCatcher.forceActiveFocus() })
+    }
+  }
+
+  function swapConversionDirection() {
+    var previousResult = conversionResult
+    conversionFromPersian = !conversionFromPersian
+    conversionResult = null
+    conversionError = ""
+    if (previousResult) setConversionFields(previousResult)
+    else resetConverter()
+  }
+
+  function performConversion() {
+    var converted = Model.convertDate(
+      conversionYear.text, conversionMonth.text, conversionDay.text,
+      conversionFromPersian)
+    conversionResult = converted.result
+    conversionError = converted.error
+  }
+
+  function clearConversionFeedback() {
+    conversionResult = null
+    conversionError = ""
+  }
+
+  function copyConversionResult() {
+    if (conversionResultText === "") return
+    Quickshell.execDetached(["bash", "-c",
+      "printf %s " + Util.shellQuote(conversionResultText) + " | wl-copy"])
+  }
+
   function weekdayLabel(weekday) {
     return Model.persianWeekdayName(weekday)
   }
@@ -162,18 +228,23 @@ Panel {
       id: keyCatcher
       anchors.fill: parent
       onMoveRequested: function(dx, dy) {
+        if (root.converterMode) return
         if (dx !== 0) root.moveMonth(dx)
         if (dy !== 0) root.moveYear(dy)
       }
-      onActivateRequested: root.goToToday()
+      onActivateRequested: {
+        if (root.converterMode) root.performConversion()
+        else root.goToToday()
+      }
       onCloseRequested: root.close()
       onTabRequested: function(direction) { root.switchPanel(direction) }
       onTextKey: function(t) {
-        if (t === "[") root.moveMonth(-1)
-        else if (t === "]") root.moveMonth(1)
-        else if (t === "{") root.moveYear(-1)
-        else if (t === "}") root.moveYear(1)
-        else if (t === "t" || t === "T") root.goToToday()
+        if (t === "c" || t === "C") root.toggleConverter()
+        else if (!root.converterMode && t === "[") root.moveMonth(-1)
+        else if (!root.converterMode && t === "]") root.moveMonth(1)
+        else if (!root.converterMode && t === "{") root.moveYear(-1)
+        else if (!root.converterMode && t === "}") root.moveYear(1)
+        else if (!root.converterMode && (t === "t" || t === "T")) root.goToToday()
       }
 
       Flickable {
@@ -253,14 +324,28 @@ Panel {
                 fontFamily: root.contentFontFamily
               }
             }
+
+            PanelActionButton {
+              anchors.left: heroRow.right
+              anchors.leftMargin: Style.space(14)
+              anchors.verticalCenter: heroRow.verticalCenter
+              size: Style.space(34)
+              fontSize: Style.font.iconLarge
+              iconText: root.converterMode ? "󰃭" : "󰒟"
+              tooltipText: root.converterMode ? "نمایش تقویم" : "تبدیل تاریخ"
+              foreground: root.contentForeground
+              fontFamily: root.contentFontFamily
+              onClicked: root.toggleConverter()
+            }
           }
 
           // ---- Year progress, doubling as the rule under the hero:
           //      a plain hairline said nothing, and whole days done
           //      over days in the year says the same thing louder.
           Item {
+            visible: !root.converterMode
             width: parent.width
-            height: yearBlock.y + yearBlock.height
+            height: visible ? yearBlock.y + yearBlock.height : 0
 
             Item {
               id: yearBlock
@@ -314,12 +399,195 @@ Panel {
             }
           }
 
+          // ---- Date converter. It replaces the calendar detail while the
+          //      hero and mode switch remain stable above it.
+          Item {
+            visible: root.converterMode
+            width: parent.width
+            height: visible ? Style.space(340) : 0
+
+            Column {
+              anchors.centerIn: parent
+              width: gridColumn.width
+              spacing: Style.space(14)
+
+              Text {
+                width: parent.width
+                text: "تبدیل تاریخ"
+                horizontalAlignment: Text.AlignHCenter
+                color: root.contentForeground
+                font.family: root.contentFontFamily
+                font.pixelSize: Style.font.subtitle
+                font.bold: true
+              }
+
+              Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: root.conversionFromPersian ? "شمسی به میلادی" : "میلادی به شمسی"
+                iconText: "󰒟"
+                tooltipText: "تغییر جهت تبدیل"
+                bordered: true
+                foreground: root.contentForeground
+                fontFamily: root.contentFontFamily
+                onClicked: root.swapConversionDirection()
+              }
+
+              Row {
+                width: parent.width
+                spacing: Style.space(10)
+
+                Column {
+                  width: (parent.width - parent.spacing * 2) / 3
+                  spacing: Style.space(4)
+                  Text {
+                    width: parent.width
+                    text: "سال"
+                    horizontalAlignment: Text.AlignHCenter
+                    color: Qt.darker(root.contentForeground, 1.45)
+                    font.family: root.contentFontFamily
+                    font.pixelSize: Style.font.bodySmall
+                  }
+                  TextField {
+                    id: conversionYear
+                    width: parent.width
+                    horizontalAlignment: TextInput.AlignHCenter
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    maximumLength: 4
+                    foreground: root.contentForeground
+                    font.family: root.contentFontFamily
+                    onTextChanged: root.clearConversionFeedback()
+                    Keys.onReturnPressed: root.performConversion()
+                    Keys.onEnterPressed: root.performConversion()
+                  }
+                }
+
+                Column {
+                  width: (parent.width - parent.spacing * 2) / 3
+                  spacing: Style.space(4)
+                  Text {
+                    width: parent.width
+                    text: "ماه"
+                    horizontalAlignment: Text.AlignHCenter
+                    color: Qt.darker(root.contentForeground, 1.45)
+                    font.family: root.contentFontFamily
+                    font.pixelSize: Style.font.bodySmall
+                  }
+                  TextField {
+                    id: conversionMonth
+                    width: parent.width
+                    horizontalAlignment: TextInput.AlignHCenter
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    maximumLength: 2
+                    foreground: root.contentForeground
+                    font.family: root.contentFontFamily
+                    onTextChanged: root.clearConversionFeedback()
+                    Keys.onReturnPressed: root.performConversion()
+                    Keys.onEnterPressed: root.performConversion()
+                  }
+                }
+
+                Column {
+                  width: (parent.width - parent.spacing * 2) / 3
+                  spacing: Style.space(4)
+                  Text {
+                    width: parent.width
+                    text: "روز"
+                    horizontalAlignment: Text.AlignHCenter
+                    color: Qt.darker(root.contentForeground, 1.45)
+                    font.family: root.contentFontFamily
+                    font.pixelSize: Style.font.bodySmall
+                  }
+                  TextField {
+                    id: conversionDay
+                    width: parent.width
+                    horizontalAlignment: TextInput.AlignHCenter
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    maximumLength: 2
+                    foreground: root.contentForeground
+                    font.family: root.contentFontFamily
+                    onTextChanged: root.clearConversionFeedback()
+                    Keys.onReturnPressed: root.performConversion()
+                    Keys.onEnterPressed: root.performConversion()
+                  }
+                }
+              }
+
+              Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "تبدیل"
+                iconText: "󰁨"
+                bordered: true
+                foreground: root.contentForeground
+                fontFamily: root.contentFontFamily
+                onClicked: root.performConversion()
+              }
+
+              Item {
+                width: parent.width
+                height: Style.space(70)
+
+                Text {
+                  visible: root.conversionResult !== null
+                  anchors.centerIn: parent
+                  text: root.conversionResultText + "  " + root.conversionDestinationLabel
+                  color: root.contentForeground
+                  font.family: root.contentFontFamily
+                  font.pixelSize: Style.font.title
+                  font.bold: true
+                }
+
+                Text {
+                  visible: root.conversionError !== ""
+                  anchors.centerIn: parent
+                  width: parent.width
+                  text: root.conversionError
+                  horizontalAlignment: Text.AlignHCenter
+                  wrapMode: Text.Wrap
+                  color: bar ? bar.urgent : Color.urgent
+                  font.family: root.contentFontFamily
+                  font.pixelSize: Style.font.body
+                }
+
+                Text {
+                  visible: root.conversionResult === null && root.conversionError === ""
+                  anchors.centerIn: parent
+                  text: "تاریخ را وارد کنید"
+                  color: Qt.darker(root.contentForeground, 1.7)
+                  font.family: root.contentFontFamily
+                  font.pixelSize: Style.font.body
+                }
+              }
+
+              Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: Style.space(12)
+
+                Button {
+                  text: "امروز"
+                  foreground: root.contentForeground
+                  fontFamily: root.contentFontFamily
+                  onClicked: root.resetConverter()
+                }
+
+                Button {
+                  text: "کپی"
+                  iconText: "󰆏"
+                  enabled: root.conversionResult !== null
+                  foreground: root.contentForeground
+                  fontFamily: root.contentFontFamily
+                  onClicked: root.copyConversionResult()
+                }
+              }
+            }
+          }
+
           // ---- Month grid: week numbers down a gutter on the left, then
           //      the seven day columns. Always six rows, so the popup is
           //      exactly as tall in February as it is in August.
           Item {
+            visible: !root.converterMode
             width: parent.width
-            height: gridColumn.y + gridColumn.height
+            height: visible ? gridColumn.y + gridColumn.height : 0
 
             WheelHandler {
               onWheel: function(event) {
@@ -480,8 +748,9 @@ Panel {
           //      The label is centered and fixed-width, so it holds still
           //      from "MAY" to "SEPTEMBER".
           Item {
+            visible: !root.converterMode
             width: parent.width
-            height: monthNav.height
+            height: visible ? monthNav.height : 0
 
             Item {
               id: monthNav

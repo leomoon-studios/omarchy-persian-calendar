@@ -23,9 +23,23 @@ for (const [gregorian, persian] of conversions) {
 }
 
 assert.strictEqual(model.toPersianDigits("1405/05/29"), "۱۴۰۵/۰۵/۲۹")
+assert.strictEqual(model.toLatinDigits("۱۴۰۵/٠٥/29"), "1405/05/29")
 assert.strictEqual(model.persianDayOfYear(5, 29), 153)
 assert.strictEqual(model.persianDaysInYear(1403), 366)
 assert.strictEqual(model.persianDaysInYear(1405), 365)
+assert.strictEqual(model.persianMonthLength(1403, 12), 30)
+assert.strictEqual(model.persianMonthLength(1405, 12), 29)
+assert.strictEqual(model.validPersianDate(1405, 12, 30), false)
+assert.strictEqual(model.validGregorianDate(2025, 2, 29), false)
+assert.deepStrictEqual(
+  model.convertDate("۱۴۰۵", "۵", "۳۰", true).result,
+  { year: 2026, month: 8, day: 21 }
+)
+assert.deepStrictEqual(
+  model.convertDate("2026", "8", "21", false).result,
+  { year: 1405, month: 5, day: 30 }
+)
+assert.strictEqual(model.convertDate("1405", "12", "30", true).ok, false)
 assert.strictEqual(model.persianYearProgressPercent(1405, 1, 1), 0)
 assert.strictEqual(model.persianYearProgressPercent(1405, 5, 29), 42)
 assert.deepStrictEqual(model.weekdayOrder(6), [6, 0, 1, 2, 3, 4, 5])
