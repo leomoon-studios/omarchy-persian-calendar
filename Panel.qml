@@ -74,7 +74,12 @@ Panel {
   readonly property string configuredFontFamily: String(setting("fontFamily", "")).trim()
   readonly property string contentFontFamily: configuredFontFamily !== ""
     ? configuredFontFamily
-    : (bar ? bar.fontFamily : Style.font.family)
+    : (bundledFont.name !== "" ? bundledFont.name : (bar ? bar.fontFamily : Style.font.family))
+
+  FontLoader {
+    id: bundledFont
+    source: Qt.resolvedUrl("assets/fonts/Vazirmatn-Regular.ttf")
+  }
 
   readonly property int cellWidth: Style.space(52)
   readonly property int cellHeight: Style.space(34)

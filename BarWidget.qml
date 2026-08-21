@@ -20,7 +20,12 @@ BarWidget {
   readonly property string configuredFontFamily: String(setting("fontFamily", "")).trim()
   readonly property string displayFontFamily: configuredFontFamily !== ""
     ? configuredFontFamily
-    : (bar ? bar.fontFamily : Style.font.family)
+    : (bundledFont.name !== "" ? bundledFont.name : (bar ? bar.fontFamily : Style.font.family))
+
+  FontLoader {
+    id: bundledFont
+    source: Qt.resolvedUrl("assets/fonts/Vazirmatn-Regular.ttf")
+  }
 
   function refresh() {
     displayDate = new Date()

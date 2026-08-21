@@ -30,8 +30,12 @@ omarchy plugin disable omarchy.clock
 
 ## Custom font
 
-Set any font-family name known to Fontconfig. If the setting is omitted or
-empty, the plugin inherits Omarchy's bar font.
+Vazirmatn Regular v33.003 is bundled with the plugin and used by default, so
+Persian text renders consistently without a system font dependency. The font
+is distributed under the SIL Open Font License 1.1; its license and author
+metadata are included in `assets/fonts/`.
+
+To override it, set any font-family name known to Fontconfig:
 
 ```bash
 omarchy bar set leomoon-studios.omarchy-persian-calendar fontFamily "Vazirmatn UI"
