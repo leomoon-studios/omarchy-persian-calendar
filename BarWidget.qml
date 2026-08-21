@@ -49,6 +49,11 @@ BarWidget {
     if (panelLoader.item) panelLoader.item.toggle()
   }
 
+  function toggleConverter() {
+    if (panelLoader.item && panelLoader.item.toggleConverter)
+      panelLoader.item.toggleConverter()
+  }
+
   // The clock fills more slot than it paints a mark for, at both
   // orientations: horizontally it is a text label in a padded slot, so the
   // dot takes the label width; vertically it is a stack of icon-sized lines,
@@ -107,6 +112,7 @@ BarWidget {
     function show(): void { root.open() }
     function hide(): void { root.close() }
     function toggle(): void { root.togglePanel() }
+    function toggleConverter(): void { root.toggleConverter() }
   }
 
   WidgetButton {
