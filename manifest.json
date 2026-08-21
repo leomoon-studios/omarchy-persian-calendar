@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "leomoon-studios.omarchy-persian-calendar",
+  "name": "Persian Calendar",
+  "version": "1.0.0",
+  "author": "Leomoon Studios",
+  "description": "Persian day number with a Jalali calendar popup",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Persian Calendar",
+    "description": "Persian day number with a Jalali calendar popup",
+    "category": "Time",
+    "defaultSection": "center",
+    "allowMultiple": false
+  }
+}
