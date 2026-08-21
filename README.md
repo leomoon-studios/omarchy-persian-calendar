@@ -4,9 +4,9 @@ A Persian (Solar Hijri/Jalali) calendar widget for the Omarchy 4 shell.
 
 The bar displays today's Jalali day using Persian numerals. Left-clicking it
 opens a theme-aware Persian calendar based on Omarchy's built-in clock panel.
-Weeks are always displayed from Monday through Sunday:
+Weeks follow the Persian convention and display Saturday through Friday:
 
-`دوشنبه، سه‌شنبه، چهارشنبه، پنجشنبه، جمعه، شنبه، یکشنبه`
+`شنبه، یکشنبه، دوشنبه، سه‌شنبه، چهارشنبه، پنجشنبه، جمعه`
 
 ## Install
 
@@ -27,6 +27,18 @@ You can then disable the built-in clock if you want this widget to replace it:
 ```bash
 omarchy plugin disable omarchy.clock
 ```
+
+## Custom font
+
+Set any font-family name known to Fontconfig. If the setting is omitted or
+empty, the plugin inherits Omarchy's bar font.
+
+```bash
+omarchy bar set leomoon-studios.omarchy-persian-calendar fontFamily "Vazirmatn UI"
+```
+
+Useful Persian-capable choices include `Vazirmatn UI`, `Vazirmatn`,
+`Noto Sans Arabic`, and `Noto Naskh Arabic`.
 
 ## Interactions
 

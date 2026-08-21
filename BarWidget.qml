@@ -17,6 +17,10 @@ BarWidget {
   readonly property var persianDate: Model.persianForDate(displayDate)
   readonly property string displayText: Model.toPersianDigits(persianDate.day)
   readonly property var verticalLines: displayText.split("\n")
+  readonly property string configuredFontFamily: String(setting("fontFamily", "")).trim()
+  readonly property string displayFontFamily: configuredFontFamily !== ""
+    ? configuredFontFamily
+    : (bar ? bar.fontFamily : Style.font.family)
 
   function refresh() {
     displayDate = new Date()
@@ -104,6 +108,7 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
+    fontFamily: root.displayFontFamily
     text: root.vertical ? "" : root.displayText
     labelVisible: !root.vertical
     hasVisualContent: root.vertical ? root.verticalLines.length > 0 : text !== ""

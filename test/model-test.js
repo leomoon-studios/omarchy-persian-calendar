@@ -23,12 +23,12 @@ for (const [gregorian, persian] of conversions) {
 }
 
 assert.strictEqual(model.toPersianDigits("1405/05/29"), "۱۴۰۵/۰۵/۲۹")
-assert.deepStrictEqual(model.weekdayOrder(1), [1, 2, 3, 4, 5, 6, 0])
+assert.deepStrictEqual(model.weekdayOrder(6), [6, 0, 1, 2, 3, 4, 5])
 
-const grid = model.persianMonthGrid(1405, 5, "1405-05-29")
+const grid = model.persianMonthGrid(1405, 5, 6, "1405-05-29")
 assert.strictEqual(grid.length, 6)
 assert.ok(grid.every(week => week.days.length === 7))
-assert.deepStrictEqual(grid[0].days.map(day => day.weekday), [1, 2, 3, 4, 5, 6, 0])
+assert.deepStrictEqual(grid[0].days.map(day => day.weekday), [6, 0, 1, 2, 3, 4, 5])
 assert.strictEqual(grid.flatMap(week => week.days).filter(day => day.today).length, 1)
 
 console.log("Persian calendar model tests passed")

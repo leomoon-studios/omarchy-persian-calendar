@@ -63,15 +63,18 @@ Panel {
   // starts out matching the rest of the desktop rather than a hardcoded
   // convention. Clicking the grid's "W" heading writes the choice back to
   // shell.json.
-  readonly property int weekStart: 1
+  readonly property int weekStart: 6
   readonly property var weekdays: Model.weekdayOrder(weekStart)
-  readonly property var weeks: Model.persianMonthGrid(viewYear, viewMonth, todayKey)
+  readonly property var weeks: Model.persianMonthGrid(viewYear, viewMonth, weekStart, todayKey)
 
 
   // Guarded so the widget renders before the bar is injected (the bar-widget
   // contract instantiates it bare).
   readonly property color contentForeground: bar ? bar.foreground : Color.foreground
-  readonly property string contentFontFamily: bar ? bar.fontFamily : Style.font.family
+  readonly property string configuredFontFamily: String(setting("fontFamily", "")).trim()
+  readonly property string contentFontFamily: configuredFontFamily !== ""
+    ? configuredFontFamily
+    : (bar ? bar.fontFamily : Style.font.family)
 
   readonly property int cellWidth: Style.space(52)
   readonly property int cellHeight: Style.space(34)

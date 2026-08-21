@@ -110,10 +110,11 @@ function persianWeekdayName(weekday) {
   return PERSIAN_WEEKDAY_NAMES[Number(weekday)] || ""
 }
 
-function persianMonthGrid(year, month, todayKey) {
+function persianMonthGrid(year, month, weekStart, todayKey) {
+  var start = normalizedWeekStart(weekStart, 6)
   var first = jalaliToGregorian(year, month, 1)
   var firstDate = new Date(first.year, first.month - 1, first.day)
-  var leading = (firstDate.getDay() - 1 + 7) % 7
+  var leading = (firstDate.getDay() - start + 7) % 7
   var cursor = new Date(first.year, first.month - 1, first.day - leading)
   var weeks = []
   for (var w = 0; w < 6; w++) {
