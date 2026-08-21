@@ -3,7 +3,7 @@
   "id": "leomoon-studios.omarchy-persian-calendar",
   "name": "Persian Calendar",
   "version": "1.0.0",
-  "author": "Leomoon Studios",
+  "author": "LeoMoon Studios",
   "description": "Persian day number with a Jalali calendar popup",
   "kinds": [
     "bar-widget"
