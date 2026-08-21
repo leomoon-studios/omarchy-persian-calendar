@@ -302,6 +302,7 @@ Panel {
                 color: Qt.rgba(root.contentForeground.r, root.contentForeground.g, root.contentForeground.b, 0.12)
 
                 Rectangle {
+                  anchors.left: parent.left
                   width: Math.round(parent.width * root.yearDone)
                   height: parent.height
                   radius: parent.radius
