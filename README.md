@@ -8,6 +8,10 @@ Weeks follow the Persian convention and display Saturday through Friday:
 
 `شنبه، یکشنبه، دوشنبه، سه‌شنبه، چهارشنبه، پنجشنبه، جمعه`
 
+The popup uses a fully right-to-left layout: Saturday is the rightmost day,
+Friday is the leftmost, and the hero, progress rail, and navigation controls
+are mirrored consistently.
+
 ## Install
 
 ```bash

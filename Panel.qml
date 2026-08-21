@@ -272,6 +272,8 @@ Panel {
 
         Column {
           id: calendarColumn
+          LayoutMirroring.enabled: true
+          LayoutMirroring.childrenInherit: true
           // Never narrower than the grid. The popup width is capped to what
           // the screen allows, and a fixed seven-column grid would otherwise
           // lose its last days off the edge instead of scrolling.
