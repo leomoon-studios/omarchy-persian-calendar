@@ -110,6 +110,31 @@ function persianWeekdayName(weekday) {
   return PERSIAN_WEEKDAY_NAMES[Number(weekday)] || ""
 }
 
+function persianDayOfYear(month, day) {
+  var m = Number(month)
+  var d = Number(day)
+  return m <= 6 ? (m - 1) * 31 + d : 186 + (m - 7) * 30 + d
+}
+
+function persianDaysInYear(year) {
+  var start = jalaliToGregorian(Number(year), 1, 1)
+  var next = jalaliToGregorian(Number(year) + 1, 1, 1)
+  return Math.round((
+    Date.UTC(next.year, next.month - 1, next.day)
+      - Date.UTC(start.year, start.month - 1, start.day)
+  ) / MS_PER_DAY)
+}
+
+function persianYearProgress(year, month, day) {
+  var total = persianDaysInYear(year)
+  if (total <= 0) return 0
+  return Math.max(0, Math.min(1, (persianDayOfYear(month, day) - 1) / total))
+}
+
+function persianYearProgressPercent(year, month, day) {
+  return Math.round(persianYearProgress(year, month, day) * 100)
+}
+
 function persianMonthGrid(year, month, weekStart, todayKey) {
   var start = normalizedWeekStart(weekStart, 6)
   var first = jalaliToGregorian(year, month, 1)
@@ -435,6 +460,10 @@ if (typeof module !== "undefined") {
     ,persianKeyForDate: persianKeyForDate
     ,persianMonthName: persianMonthName
     ,persianWeekdayName: persianWeekdayName
+    ,persianDayOfYear: persianDayOfYear
+    ,persianDaysInYear: persianDaysInYear
+    ,persianYearProgress: persianYearProgress
+    ,persianYearProgressPercent: persianYearProgressPercent
     ,persianMonthGrid: persianMonthGrid
     ,stepPersianMonth: stepPersianMonth
   }

@@ -23,6 +23,11 @@ for (const [gregorian, persian] of conversions) {
 }
 
 assert.strictEqual(model.toPersianDigits("1405/05/29"), "۱۴۰۵/۰۵/۲۹")
+assert.strictEqual(model.persianDayOfYear(5, 29), 153)
+assert.strictEqual(model.persianDaysInYear(1403), 366)
+assert.strictEqual(model.persianDaysInYear(1405), 365)
+assert.strictEqual(model.persianYearProgressPercent(1405, 1, 1), 0)
+assert.strictEqual(model.persianYearProgressPercent(1405, 5, 29), 42)
 assert.deepStrictEqual(model.weekdayOrder(6), [6, 0, 1, 2, 3, 4, 5])
 
 const grid = model.persianMonthGrid(1405, 5, 6, "1405-05-29")

@@ -45,8 +45,8 @@ Panel {
 
   // Pinned to today, not to the month being browsed — stepping through the
   // calendar does not change how much of the year is gone.
-  readonly property real yearDone: Model.yearProgress(today.getFullYear(), today.getMonth(), today.getDate())
-  readonly property int yearDonePercent: Model.yearProgressPercent(today.getFullYear(), today.getMonth(), today.getDate())
+  readonly property real yearDone: Model.persianYearProgress(todayPersian.year, todayPersian.month, todayPersian.day)
+  readonly property int yearDonePercent: Model.persianYearProgressPercent(todayPersian.year, todayPersian.month, todayPersian.day)
 
   // Memento mori, for anyone who goes looking: double-tapping the year bar
   // asks for a birth year and a life expectancy, and a second bar tracks one
@@ -727,7 +727,7 @@ Panel {
                 anchors.left: parent.left
                 anchors.leftMargin: -Style.space(8)
                 anchors.verticalCenter: parent.verticalCenter
-                iconText: "󰅁"
+                iconText: "󰅂"
                 tooltipText: "ماه قبل"
                 foreground: root.contentForeground
                 fontFamily: root.contentFontFamily
@@ -738,7 +738,7 @@ Panel {
                 anchors.right: parent.right
                 anchors.rightMargin: -Style.space(8)
                 anchors.verticalCenter: parent.verticalCenter
-                iconText: "󰅂"
+                iconText: "󰅁"
                 tooltipText: "ماه بعد"
                 foreground: root.contentForeground
                 fontFamily: root.contentFontFamily
