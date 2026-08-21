@@ -12,6 +12,10 @@ The popup uses a fully right-to-left layout: Saturday is the rightmost day,
 Friday is the leftmost, and the hero, progress rail, and navigation controls
 are mirrored consistently.
 
+## Preview
+
+![Omarchy Persian Calendar preview](preview.png)
+
 ## Install
 
 ```bash
@@ -30,6 +34,12 @@ You can then disable the built-in clock if you want this widget to replace it:
 
 ```bash
 omarchy plugin disable omarchy.clock
+```
+
+## Remove
+
+```bash
+omarchy plugin remove leomoon-studios.omarchy-persian-calendar --yes
 ```
 
 ## Custom font
