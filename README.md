@@ -84,3 +84,9 @@ The QML panel is derived from Omarchy 4's MIT-licensed built-in clock plugin.
 Gregorian/Jalali conversion logic is ported from
 [mjnaderi/Jalali.py](https://github.com/mjnaderi/Jalali.py), whose source
 includes its original licensing notice.
+
+## License
+
+Original plugin code is licensed under the MIT License. Third-party portions
+retain their respective terms; see `THIRD_PARTY_NOTICES.md` and the bundled
+Vazirmatn license in `assets/fonts/OFL.txt`.

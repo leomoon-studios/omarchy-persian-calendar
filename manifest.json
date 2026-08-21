@@ -4,6 +4,7 @@
   "name": "Persian Calendar",
   "version": "1.0.0",
   "author": "LeoMoon Studios",
+  "license": "MIT",
   "description": "Persian day number with a Jalali calendar popup",
   "kinds": [
     "bar-widget"
