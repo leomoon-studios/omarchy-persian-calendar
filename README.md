@@ -2,15 +2,10 @@
 
 A Persian (Solar Hijri/Jalali) calendar widget for the Omarchy 4 shell.
 
-The bar displays today's Jalali day using Persian numerals. Left-clicking it
-opens a theme-aware Persian calendar based on Omarchy's built-in clock panel.
-Weeks follow the Persian convention and display Saturday through Friday:
+The bar displays today's Jalali day, month, and year using Persian numerals. Left-clicking it opens a theme-aware Persian calendar based on Omarchy's built-in clock panel. Right-clicking cycles through Persian date and time labels, including the weekday, day, and month form. The selected format is saved in
+Omarchy's bar configuration. 
 
-`شنبه، یکشنبه، دوشنبه، سه‌شنبه، چهارشنبه، پنجشنبه، جمعه`
-
-The popup uses a fully right-to-left layout: Saturday is the rightmost day,
-Friday is the leftmost, and the hero, progress rail, and navigation controls
-are mirrored consistently.
+The popup uses a fully right-to-left layout: Saturday is the rightmost day, Friday is the leftmost, and the hero, progress rail, and navigation controls are mirrored consistently.
 
 A built-in date converter switches between Jalali-to-Gregorian and
 Gregorian-to-Jalali modes. It accepts Persian, Arabic, or Latin numerals and
@@ -24,14 +19,7 @@ runs entirely inside the plugin without launching a background process.
 
 ```bash
 omarchy plugin add https://github.com/leomoon-studios/omarchy-persian-calendar --enable
-omarchy bar move leomoon-studios.omarchy-persian-calendar --section center
-```
-
-To use it as the exact center anchor, set this value in
-`~/.config/omarchy/shell.json`:
-
-```json
-"centerAnchor": "leomoon-studios.omarchy-persian-calendar"
+omarchy bar move leomoon-studios.omarchy-persian-calendar --section center --after omarchy.clock
 ```
 
 You can then disable the built-in clock if you want this widget to replace it:
@@ -65,6 +53,7 @@ Useful Persian-capable choices include `Vazirmatn UI`, `Vazirmatn`,
 ## Interactions
 
 - Left click: open or close the calendar
+- Right click: cycle the Persian bar date/time format
 - Middle click: open Omarchy's timezone menu
 - Mouse wheel or `[` / `]`: previous or next month
 - Arrow left/right: previous or next month

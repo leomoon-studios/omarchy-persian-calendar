@@ -7,15 +7,19 @@ import "Model.js" as Model
 
 // Persian day-of-month label for the bar, and host for the Jalali calendar.
 //
-// Left click reveals the calendar; middle click opens the timezone picker.
+// Left click reveals the calendar, right click cycles Persian label formats,
+// and middle click opens the timezone picker.
 BarWidget {
   id: root
   moduleName: "leomoon-studios.omarchy-persian-calendar"
 
   property date displayDate: clock.date
 
-  readonly property var persianDate: Model.persianForDate(displayDate)
-  readonly property string displayText: Model.toPersianDigits(persianDate.day)
+  readonly property string configuredFormat: vertical
+    ? setting("verticalFormat", "day")
+    : setting("format", "day-month-year")
+  readonly property var formatRing: Model.persianBarFormats(vertical)
+  readonly property string displayText: Model.formatPersianBar(displayDate, configuredFormat)
   readonly property var verticalLines: displayText.split("\n")
   readonly property string configuredFontFamily: String(setting("fontFamily", "")).trim()
   readonly property string displayFontFamily: configuredFontFamily !== ""
@@ -30,6 +34,20 @@ BarWidget {
   function refresh() {
     displayDate = new Date()
     if (panelLoader.item && panelLoader.item.refresh) panelLoader.item.refresh()
+  }
+
+  function cycleFormat() {
+    var current = String(configuredFormat)
+    var next = Model.nextPersianBarFormat(formatRing, current)
+    if (next === "" || next === current) return
+
+    var entry = { id: root.moduleName }
+    for (var key in root.settings) if (key !== "id") entry[key] = root.settings[key]
+    entry[vertical ? "verticalFormat" : "format"] = next
+
+    root.settings = entry
+    if (root.bar && root.bar.shell && typeof root.bar.shell.updateEntryInline === "function")
+      root.bar.shell.updateEntryInline(root.moduleName, entry)
   }
 
   // ---- Calendar popup. Shape contract for shell.summon/hide/toggle
@@ -107,6 +125,7 @@ BarWidget {
     target: "leomoon-studios.omarchy-persian-calendar"
 
     function refresh(): void { root.broadcast("refresh") }
+    function cycleFormat(): void { root.cycleFormat() }
     function open(): void { root.open() }
     function close(): void { root.close() }
     function show(): void { root.open() }
@@ -128,7 +147,8 @@ BarWidget {
     verticalPadding: 8.75
 
     onPressed: function(b) {
-      if (b === Qt.MiddleButton) { if (root.bar) root.bar.run("omarchy-menu-timezone") }
+      if (b === Qt.RightButton) root.cycleFormat()
+      else if (b === Qt.MiddleButton) { if (root.bar) root.bar.run("omarchy-menu-timezone") }
       else if (b === Qt.LeftButton) root.togglePanel()
     }
 

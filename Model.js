@@ -116,6 +116,54 @@ function persianWeekdayName(weekday) {
   return PERSIAN_WEEKDAY_NAMES[Number(weekday)] || ""
 }
 
+// Stable identifiers for the Persian bar label. Keeping these independent
+// from Qt date-format strings lets every date component come from Jalali
+// conversion and makes saved settings portable across locales.
+var PERSIAN_BAR_FORMATS = [
+  "day-month-year",
+  "day",
+  "weekday-day",
+  "day-month",
+  "weekday-day-month",
+  "full-date",
+  "time",
+  "day-month-time",
+  "weekday-full-date-time"
+]
+
+function persianBarFormats(vertical) {
+  return vertical ? ["day"] : PERSIAN_BAR_FORMATS.slice()
+}
+
+function nextPersianBarFormat(formats, current) {
+  if (!formats || formats.length === 0) return "day-month-year"
+  var index = formats.indexOf(String(current === undefined || current === null ? "" : current))
+  return formats[(index + 1) % formats.length]
+}
+
+function formatPersianBar(date, format) {
+  var value = date instanceof Date && !isNaN(date.getTime()) ? date : new Date()
+  var persian = persianForDate(value)
+  var day = toPersianDigits(persian.day)
+  var month = persianMonthName(persian.month)
+  var weekday = persianWeekdayName(value.getDay())
+  var fullDate = toPersianDigits(persian.year + "-" + pad2(persian.month) + "-" + pad2(persian.day))
+  var time = toPersianDigits(pad2(value.getHours()) + ":" + pad2(value.getMinutes()))
+
+  switch (String(format || "day-month-year")) {
+  case "day-month-year": return day + " " + month + " " + toPersianDigits(persian.year)
+  case "day": return day
+  case "weekday-day": return weekday + " " + day
+  case "day-month": return day + " " + month
+  case "weekday-day-month": return weekday + " " + day + " " + month
+  case "full-date": return fullDate
+  case "time": return time
+  case "day-month-time": return day + " " + month + " " + time
+  case "weekday-full-date-time": return weekday + " " + day + " " + month + " " + toPersianDigits(persian.year) + " " + time
+  default: return day + " " + month + " " + toPersianDigits(persian.year)
+  }
+}
+
 function persianDayOfYear(month, day) {
   var m = Number(month)
   var d = Number(day)
@@ -453,6 +501,9 @@ if (typeof module !== "undefined") {
     ,persianKeyForDate: persianKeyForDate
     ,persianMonthName: persianMonthName
     ,persianWeekdayName: persianWeekdayName
+    ,persianBarFormats: persianBarFormats
+    ,nextPersianBarFormat: nextPersianBarFormat
+    ,formatPersianBar: formatPersianBar
     ,persianDayOfYear: persianDayOfYear
     ,persianDaysInYear: persianDaysInYear
     ,persianMonthLength: persianMonthLength
