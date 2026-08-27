@@ -1,6 +1,6 @@
 # Omarchy Persian Calendar
 
-A Persian (Solar Hijri/Jalali) calendar widget for the Omarchy 4 shell.
+A Persian (Solar/Jalali) calendar widget for the Omarchy 4 shell.
 
 The bar displays today's Jalali day, month, and year using Persian numerals. Left-clicking it opens a theme-aware Persian calendar based on Omarchy's built-in clock panel. Right-clicking cycles through Persian date and time labels, including the weekday, day, and month form. The selected format is saved in
 Omarchy's bar configuration. 
