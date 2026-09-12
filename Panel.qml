@@ -226,6 +226,21 @@ Panel {
     contentWidth: panel.fittedContentWidth(Style.space(560))
     contentHeight: panel.fittedContentHeight(calendarColumn.implicitHeight)
 
+    // Installed plugins receive a scoped PluginBarApi whose clickTargets
+    // contains only their own buttons. KeyboardPanel cannot forward a click
+    // to a built-in or another plugin through that restricted list, so leave
+    // the bar strip out of this window's input region. The real bar receives
+    // the click and its active-popout coordinator performs the same one-click
+    // handoff used between built-in panels.
+    mask: Region {
+      x: panel.barPos === "left" ? panel.barW : 0
+      y: panel.barPos === "top" ? panel.barH : 0
+      width: Math.max(0, panel.screenW
+        - ((panel.barPos === "left" || panel.barPos === "right") ? panel.barW : 0))
+      height: Math.max(0, panel.screenH
+        - ((panel.barPos === "top" || panel.barPos === "bottom") ? panel.barH : 0))
+    }
+
     PanelKeyCatcher {
       id: keyCatcher
       anchors.fill: parent
