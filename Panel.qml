@@ -233,12 +233,12 @@ Panel {
     // the click and its active-popout coordinator performs the same one-click
     // handoff used between built-in panels.
     mask: Region {
-      x: panel.barPos === "left" ? panel.barW : 0
-      y: panel.barPos === "top" ? panel.barH : 0
+      x: panel.barPos === "left" ? panel.barThickness : 0
+      y: panel.barPos === "top" ? panel.barThickness : 0
       width: Math.max(0, panel.screenW
-        - ((panel.barPos === "left" || panel.barPos === "right") ? panel.barW : 0))
+        - ((panel.barPos === "left" || panel.barPos === "right") ? panel.barThickness : 0))
       height: Math.max(0, panel.screenH
-        - ((panel.barPos === "top" || panel.barPos === "bottom") ? panel.barH : 0))
+        - ((panel.barPos === "top" || panel.barPos === "bottom") ? panel.barThickness : 0))
     }
 
     PanelKeyCatcher {
